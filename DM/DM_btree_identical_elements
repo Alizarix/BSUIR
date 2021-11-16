@@ -1,0 +1,105 @@
+#include <iostream>
+# include <stdio.h>
+# include <stdlib.h>
+using namespace std;
+
+/*Определить, если в данном бинарном дереве два одинаковых элемента*/
+
+struct tree
+{
+	int data;
+	int copies;
+	tree* left;
+	tree* right;
+};
+
+void create(tree** node, int a)
+{
+	tree* ptr;
+
+
+	if (NULL == ((*node)))    //Если дерева нет, то добавляем первый корневой элемент
+	{
+		((*node)) = (tree*)calloc(1, sizeof(tree));   //Выделяем память под звено дерева
+		((*node))->data = a;                           //Записываем данные в звено
+		((*node))->copies = 1;
+		((*node))->left = NULL;                        //Подзвенья инициализируем пустотой во избежание ошибок
+		((*node))->right = NULL;
+	}
+
+	else if (a < ((*node))->data)   //Если нововведенный элемент x меньше чем элемент x из корня дерева, уходим влево
+	{
+		if (((*node))->left != NULL)
+		{
+			create(&((*node))->left, a);            //При помощи рекурсии помещаем элемент на свободный участок
+			((*node))->copies = 1;
+		}
+		else              //Если элемент получил свой участок, то
+		{
+			((*node))->left = (tree*)calloc(1, sizeof(tree));            //Выделяем память левому подзвену. 
+			((*node))->left->left = ((*node))->left->right = NULL;    //У левого подзвена будут свои левое и правое подзвенья, инициализируем их пустотой
+			((*node))->left->data = a;                                    //Записываем в левое подзвено записываемый элемент 
+			((*node))->left->copies = 1;
+		}
+	}
+
+
+	if (a > ((*node))->data)   //Если нововведенный элемент x больше чем элемент x из корня дерева, уходим вправо
+	{
+		if (((*node))->right != NULL) {
+			create(&(*node)->right, a);                 //При помощи рекурсии заталкиваем элемент на свободный участок
+			((*node))->copies = 1;
+		}
+		else             //Если элемент получил свой участок, то
+		{
+			((*node))->right = (tree*)calloc(1, sizeof(tree));               //Выделяем память правому подзвену. 
+			((*node))->right->left = ((*node))->right->right = NULL;       //У правого подзвена будут свои левое и правое подзвенья, инициализируем их пустотой
+			((*node))->right->data = a;                                        //Записываем в правое подзвено записываемый элемент 
+			((*node))->right->copies = 1;
+		}
+	}
+
+	if (a == ((*node))->data) // Если нововведенный элемент х уже встречался, увеличиваем на 1 его счетчик
+	{
+		((*node))->copies++;
+	}
+
+}
+void print(tree* node)
+{
+	if (node != NULL)        //Пока не встретится пустое звено
+	{
+
+		printf("%4d ", node->data);
+		print(node->left);
+		printf("\n");
+		print(node->right);
+
+	}
+}
+
+void treeprint(tree* node) {
+	if (node != NULL) {
+		treeprint(node->left);
+		printf("%d %d\n", node->copies, node->data);
+		treeprint(node->right);
+	}
+}
+
+
+int main()
+{
+	setlocale(LC_ALL, "Rus");
+	tree* node = NULL;
+
+	int x;
+	while (scanf_s("%d", &x))
+		create(&node, x);
+
+	print(node);
+
+	cout<<"Количество повторов"<< endl;
+		treeprint(node);
+
+	return 0;
+}
